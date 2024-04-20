@@ -1,4 +1,5 @@
 (ql:quickload '#:com.inuoe.jzon)
+
 (ql:quickload '#:uiop)
 (add-package-local-nickname '#:jzon '#:com.inuoe.jzon)
 

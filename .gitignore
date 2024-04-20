@@ -1,0 +1,16 @@
+themehub/.cpcache
+themehub/.nrepl-port
+themehub/bin
+themehub/config.edn
+themehub/config.sh
+themehub/config.env
+themehub/node_modules
+themehub/secrets.env
+themehub/storage/
+themehub/tailwindcss
+themehub/target
+*.calva/
+*.clj-kondo/
+*.lsp/
+*.portal/
+*.shadow-cljs/
