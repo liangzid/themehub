@@ -10,38 +10,6 @@
             [ring.adapter.jetty9 :as jetty]
             [cheshire.core :as cheshire]))
 
-(defn set-foo [{:keys [session params] :as ctx}]
-  (biff/submit-tx ctx
-    [{:db/op :update
-      :db/doc-type :user
-      :xt/id (:uid session)
-      :user/foo (:foo params)}])
-  {:status 303
-   :headers {"location" "/app"}})
-
-(defn bar-form [{:keys [value]}]
-  (biff/form
-   {:hx-post "/app/set-bar"
-    :hx-swap "outerHTML"}
-   [:label.block {:for "bar"} "Bar: "
-    [:span.font-mono (pr-str value)]]
-   [:.h-1]
-   [:.flex
-    [:input.w-full#bar {:type "text" :name "bar" :value value}]
-    [:.w-10]
-    [:button.btn {:type "submit"} "Update"]]
-   [:.h-1]
-   [:.text-sm.text-gray-500
-    "This demonstrates updating a value with HTMX."]))
-
-(defn set-bar [{:keys [session params] :as ctx}]
-  (biff/submit-tx ctx
-    [{:db/op :update
-      :db/doc-type :user
-      :xt/id (:uid session)
-      :user/bar (:bar params)}])
-  (biff/render (bar-form {:value (:bar params)})))
-
 (defn message [{:msg/keys [text sent-at]}]
   [:.mt-3 {:_ "init send newMessage to #message-header"}
    [:.text-gray-600 (biff/format-date sent-at "dd MMM yyyy HH:mm:ss")]
@@ -93,34 +61,67 @@
      [:div#messages
       (map message (sort-by :msg/sent-at #(compare %2 %1) messages))]]))
 
+(def theme-transformer
+     {"blue"  "#C2E8F7",
+     "red"  "#FCE0E1",
+     "yellow"  "#F2F4C1",
+     "orange"  "#FFE2BB",
+     "green"  "#CCE7CF",
+     "grey-dark"  "#DBDFEF",
+     "grey-white"  "#F3F3F4",
+     "purple"  "#C5BEDF"}
+  )
+
+;; (doseq [[k v] theme-transformer]
+;;      (println k v))
+
+(rum/defc a-color-card [color-name color-hex]
+  [:div {:style {:width "50px"
+                 :height "40px"
+                 :background-color color-hex}}
+])
+
+(rum/defc a-theme-card [theme-dict theme-name]
+  [:div
+   [:p.text-2xl.font-mono.text-center theme-name]
+   [:div.gap-4.place-content-center
+     (for [[color hex] theme-dict]
+       (a-color-card color hex)
+       )
+   ]])
+
 (defn app [{:keys [session biff/db] :as ctx}]
   (let [{:user/keys [email foo bar]} (xt/entity db (:uid session))]
     (ui/page
      {}
-     [:div "Signed in as " email ". "
+     ;; information of sign in and sign out.
+     [:div.font-serif.right-0
+      "Signed in as " email ". "
       (biff/form
        {:action "/auth/signout"
         :class "inline"}
-       [:button.text-blue-500.hover:text-blue-800 {:type "submit"}
-        "Sign out"])
-      "."]
+       [:button.bg-black.rounded-lg.shadow-xl.text-white.hover:text-blue-800
+        {:type "submit"
+         }
+        " Sign out "])
+      ]
+     ;; seperating with whitespaces.
+     [:.h-20]
+
+     ;;--- color theme here we set.
+     [:h1.text-3xl.font-bold "Theme Gallery"]
+     [:.h-10]
+
+     (a-theme-card theme-transformer "Transformer")
+
+     [:label ""]
+
+     ;;--- color theme ends here.
+     [:.h-20]
+
      [:.h-6]
-     (biff/form
-      {:action "/app/set-foo"}
-      [:label.block {:for "foo"} "Foo: "
-       [:span.font-mono (pr-str foo)]]
-      [:.h-1]
-      [:.flex
-       [:input.w-full#foo {:type "text" :name "foo" :value foo}]
-       [:.w-3]
-       [:button.btn {:type "submit"} "Update"]]
-      [:.h-1]
-      [:.text-sm.text-gray-600
-       "This demonstrates updating a value with a plain old form."])
-     [:.h-6]
-     (bar-form {:value bar})
-     [:.h-6]
-     (chat ctx))))
+     (chat ctx)
+     )))
 
 (defn ws-handler [{:keys [themes/chat-clients] :as ctx}]
   {:status 101
