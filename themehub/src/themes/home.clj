@@ -1,3 +1,7 @@
+;;
+;; This file talks about the authentication pages and logics.
+;;
+
 (ns themes.home
   (:require [clj-http.client :as http]
             [com.biffweb :as biff]
@@ -8,7 +12,7 @@
             [xtdb.api :as xt]))
 
 (def email-disabled-notice
-  [:.text-sm.mt-3.bg-blue-100.rounded.p-2
+  [:.text-sm.mt-2.bg-blue-200.rounded.p-2
    "Until you add API keys for MailerSend and reCAPTCHA, we'll print your sign-up "
    "link to the console. See config.edn."])
 
@@ -16,11 +20,11 @@
   (ui/page
    (assoc ctx ::ui/recaptcha true)
    (biff/form
-    {:action "/auth/send-link"
+    {:action "/auth/send-code"
      :id "signup"
      :hidden {:on-error "/"}}
     (biff/recaptcha-callback "submitSignup" "signup")
-    [:h2.text-2xl.font-bold (str "Sign up for " settings/app-name)]
+    [:h2.text-3xl.font-bold (str "Sign up for " settings/app-name)]
     [:.h-3]
     [:.flex
      [:input#email {:name "email"

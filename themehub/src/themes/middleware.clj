@@ -1,6 +1,8 @@
 (ns themes.middleware
   (:require [com.biffweb :as biff]
-            [muuntaja.middleware :as muuntaja]
+            ;; a wrapper or transformer
+            [muuntaja.middleware :as muuntaja] 
+            ;; improve the security somewhere.
             [ring.middleware.anti-forgery :as csrf]
             [ring.middleware.defaults :as rd]))
 
@@ -18,14 +20,18 @@
       {:status 303
        :headers {"location" "/signin?error=not-signed-in"}})))
 
-;; Stick this function somewhere in your middleware stack below if you want to
-;; inspect what things look like before/after certain middleware fns run.
+;; Stick this function somewhere in your middleware stack below if
+;; you want to inspect what things look like before/after certain
+;; middleware fns run.
+;; ---for debug
 (defn wrap-debug [handler]
   (fn [ctx]
     (let [response (handler ctx)]
+      (println "-----DEBUG----------")
       (println "REQUEST")
       (biff/pprint ctx)
       (def ctx* ctx)
+      (println "-----DEBUG----------")
       (println "RESPONSE")
       (biff/pprint response)
       (def response* response)

@@ -1,10 +1,12 @@
 (ns themes.app
   (:require [com.biffweb :as biff :refer [q]]
-            [themes.middleware :as mid]
+            [themes.middleware :as mid] ;; middlewares
+            ;; define page, base, and error page, too complex.
             [themes.ui :as ui]
+            ;; name used in other place
             [themes.settings :as settings]
-            [rum.core :as rum]
-            [xtdb.api :as xt]
+            [rum.core :as rum] ;; html render
+            [xtdb.api :as xt] ;; xtdb
             [ring.adapter.jetty9 :as jetty]
             [cheshire.core :as cheshire]))
 
@@ -26,10 +28,10 @@
    [:.h-1]
    [:.flex
     [:input.w-full#bar {:type "text" :name "bar" :value value}]
-    [:.w-3]
+    [:.w-10]
     [:button.btn {:type "submit"} "Update"]]
    [:.h-1]
-   [:.text-sm.text-gray-600
+   [:.text-sm.text-gray-500
     "This demonstrates updating a value with HTMX."]))
 
 (defn set-bar [{:keys [session params] :as ctx}]
@@ -135,7 +137,8 @@
   (ui/page
    {:base/title (str "About " settings/app-name)}
    [:p "This app was made with "
-    [:a.link {:href "https://biffweb.com"} "Biff"] "."]))
+    [:a.link {:href "https://biffweb.com"} "Biff"] "."]
+   ))
 
 (defn echo [{:keys [params]}]
   {:status 200

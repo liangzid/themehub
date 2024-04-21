@@ -7,7 +7,8 @@
   (iterate #(biff/add-seconds % (* 60 n)) (java.util.Date.)))
 
 (defn print-usage [{:keys [biff/db]}]
-  ;; For a real app, you can have this run once per day and send you the output
+  ;; For a real app, you can have this run once per day and send you
+  ;; the output
   ;; in an email.
   (let [n-users (nth (q db
                         '{:find (count user)
@@ -18,7 +19,10 @@
 
 (defn alert-new-user [{:keys [biff.xtdb/node]} tx]
   (doseq [_ [nil]
-          :let [db-before (xt/db node {::xt/tx-id (dec (::xt/tx-id tx))})]
+          :let [db-before
+                (xt/db node
+                       {::xt/tx-id
+                        (dec (::xt/tx-id tx))})]
           [op & args] (::xt/tx-ops tx)
           :when (= op ::xt/put)
           :let [[doc] args]

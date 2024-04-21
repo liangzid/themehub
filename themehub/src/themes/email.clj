@@ -6,6 +6,7 @@
             [clojure.tools.logging :as log]
             [rum.core :as rum]))
 
+;; signin with the activation link.
 (defn signin-link [{:keys [to url user-exists]}]
   (let [[subject action] (if user-exists
                            [(str "Sign in to " settings/app-name) "sign in"]
@@ -28,6 +29,7 @@
                 "This link will expire in one hour. If you did not request this link, "
                 "you can ignore this email.")}))
 
+;; sigin in with the activation code.
 (defn signin-code [{:keys [to code user-exists]}]
   (let [[subject action] (if user-exists
                            [(str "Sign in to " settings/app-name) "sign in"]
@@ -57,15 +59,26 @@
      :signin-code signin-code)
    opts))
 
-(defn send-mailersend [{:keys [biff/secret mailersend/from mailersend/reply-to]} form-params]
+(defn send-mailersend [{:keys [
+                               biff/secret
+                               mailersend/from
+                               mailersend/reply-to]}
+                       form-params]
   (let [result (http/post "https://api.mailersend.com/v1/email"
                           {:oauth-token (secret :mailersend/api-key)
                            :content-type :json
                            :throw-exceptions false
                            :as :json
-                           :form-params (merge {:from {:email from :name settings/app-name}
-                                                :reply_to {:email reply-to :name settings/app-name}}
-                                               form-params)})
+                           :form-params (merge
+                                         {:from
+                                          {:email from
+                                           :name settings/app-name
+                                           }
+
+                                          :reply_to
+                                          {:email reply-to
+                                           :name settings/app-name}}
+                                         form-params)})
         success (< (:status result) 400)]
     (when-not success
       (log/error (:body result)))
@@ -81,10 +94,13 @@
            "API keys for MailerSend and Recaptcha to config.env.")
   true)
 
-(defn send-email [{:keys [biff/secret recaptcha/site-key] :as ctx} opts]
+(defn send-email [{:keys [biff/secret recaptcha/site-key]
+                   :as ctx}
+                  opts]
   (let [form-params (if-some [template-key (:template opts)]
                       (template template-key opts)
                       opts)]
+    ;; we need to set both the key to activate the email sending func.
     (if (every? some? [(secret :mailersend/api-key)
                        (secret :recaptcha/secret-key)
                        site-key])

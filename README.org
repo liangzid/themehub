@@ -1,0 +1,10 @@
+#+title: ColorSet: ThemeHub for different themes.
+#+date: Sat Apr 20 14:18:01 2024
+#+author: Zi Liang
+#+email: zi1415926.liang@connect.polyu.hk
+#+latex_class: elegantpaper
+#+filetags: :doc:
+* Functions: Coding
+** INPROGRESS Show a color block that can copied the value of the color.
+** TODO add and delete the color theme automatically.
+** TODO Headers and the navigation row.

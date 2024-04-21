@@ -1,5 +1,5 @@
 (ns themes.ui
-  (:require [cheshire.core :as cheshire]
+  (:require [cheshire.core :as cheshire] ;; json serialization
             [clojure.java.io :as io]
             [themes.settings :as settings]
             [com.biffweb :as biff]
@@ -7,6 +7,7 @@
             [ring.util.response :as ring-response]
             [rum.core :as rum]))
 
+;; dynamic file path with timestamp
 (defn css-path []
   (if-some [last-modified (some-> (io/resource "public/css/main.css")
                                   ring-response/resource-data
@@ -33,14 +34,17 @@
                      :description (str settings/app-name " Description")
                      :image "https://clojure.org/images/clojure-logo-120b.png"})
        (update :base/head (fn [head]
-                            (concat [[:link {:rel "stylesheet" :href (css-path)}]
+                            (concat [[:link
+                                      {:rel "stylesheet"
+                                       :href (css-path)}]
                                      [:script {:src (js-path)}]
                                      [:script {:src "https://unpkg.com/htmx.org@1.9.10"}]
                                      [:script {:src "https://unpkg.com/htmx.org/dist/ext/ws.js"}]
                                      [:script {:src "https://unpkg.com/hyperscript.org@0.9.8"}]
                                      (when recaptcha
                                        [:script {:src "https://www.google.com/recaptcha/api.js"
-                                                 :async "async" :defer "defer"}])]
+                                                 :async "async"
+                                                 :defer "defer"}])]
                                     head))))
    body))
 
