@@ -135,7 +135,7 @@ def showATheme(theme_name:str, theme_dict:Dict[str,str],page:ft.Page):
     return atheme
 
 
-ft.app(main)
+app=ft.app(main,export_asgi_app=True)
 
 
 
